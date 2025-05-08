@@ -4,7 +4,7 @@
 if(process.env.NODE_ENV != "production"){
     require("dotenv").config() ;
 }
-console.log(process.env.SECRET) ;
+// console.log(process.env.SECRET) ;
 
 const express = require("express") ;
 const app = express() ;
@@ -66,7 +66,7 @@ app.listen(8080 , () => {
 // }) ;
 
 async function main(){
-    await mongoose.connect(dbUrl) ;
+     mongoose.connect(dbUrl) ;
 }
 
 main()
@@ -101,7 +101,7 @@ app.use((req , res , next) => {
     res.locals.success = req.flash("success") ;
     res.locals.error = req.flash("error") ;
     res.locals.currUser = req.user ;
-    console.log(req.user) ; // used to show login signup & logout options
+    // console.log(req.user) ; // used to show login signup & logout options
     // console.log(res.locals.success) ;
     next() ;
 }) ;
@@ -130,16 +130,29 @@ app.get("/registeruser" , async (req , res) => {
     res.send(result) ;
 }) ;
 
-// app.all("*" , (req , res , next) => {
-//     next(new ExpressError(404 , "Page Not Found !!")) ;
-// }) ;
+app.use((req , res , next) => {
+    next(new ExpressError(404 , "Page Not Found !!")) ;
+}) ;
+
+// app.all("*", (req, res, next) => {
+//     try {
+//         throw new ExpressError(404, "Page Not Found !!");
+//     } catch (err) {
+//         next(err);
+//     }
+// });
+
 
 app.use((err , req , res , next) => {
     let {statusCode = 500 , message = "Something went wrong"} = err ;
-    res.status(statusCode).render("listings/error.ejs" , {message}) ;
+    res.status(statusCode).render("listings/error.ejs" , {message , statusCode}) ;
     // res.status(statusCode).send(message) ;
 }) ;
 
 // app.use((req , res , next) => {
 //     res.status(404).send("Page not found !!") ;
 // }) ;
+
+// app.get('/', (req,res)=>{
+//     res.send("HELLO");
+// })
